@@ -1,0 +1,79 @@
+{% block title %}main{% endblock %}
+
+{% block main %}
+<body>
+    <style>
+        img {
+            /* width:500px; */
+            height:500px;
+        }
+        .image-sel-div{
+            display:inline-block;
+        }
+    </style>
+    <form action='compare' method='POST' enctype="multipart/form-data" onsubmit="hide_result();">
+        Face Compare Demo:<br>
+        <div class="row">
+            <div class="image-sel-div" >
+                <label class="custom-file-label" for="image1">Select image...</label>
+                <input type="file" class="custom-file-input" name="image1" id="image1"><br>
+                <img src="#" id="img1"/>
+            </div>
+            <div class="image-sel-div">
+                <label class="custom-file-label" for="image2">Select image...</label>
+                <input type="file" class="custom-file-input" name="image2" id="image2"><br>
+                <img src="#" id="img2"/>
+            </div>
+        </div>
+        <input type='submit' value='Submit'>
+    </form>
+    <div class="result-div">
+        <a> result = {{ result }}</a>
+    </div>
+</body>
+
+<script>
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var imageData;
+
+    function hide_result() {
+        document.getElementsByClassName('result-div')[0].style.visibility = 'hidden';
+    }
+
+    document.getElementById('image1').onchange = function (evt) {
+        var tgt = evt.target || window.event.srcElement,
+            files = tgt.files;
+        // FileReader support
+        if (FileReader && files && files.length) {
+            var fr = new FileReader();
+            fr.onload = () => showImage(fr, 1);
+            fr.readAsDataURL(files[0]);
+        }
+    }
+    document.getElementById('image2').onchange = function (evt) {
+        var tgt = evt.target || window.event.srcElement,
+            files = tgt.files;
+        // FileReader support
+        if (FileReader && files && files.length) {
+            var fr = new FileReader();
+            fr.onload = () => showImage(fr, 2);
+            fr.readAsDataURL(files[0]);
+        }
+    }
+
+    function showImage(fileReader, id) {
+        var imgstr = "img"+id;
+        var img = document.getElementById(imgstr);
+        img.onload = () => getImageData(img);
+        img.src = fileReader.result;
+    }
+
+    function getImageData(img) {
+        ctx.drawImage(img, 0, 0);
+        imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+        console.log("image data:", imageData);
+    }
+
+</script>
+{% endblock %}
